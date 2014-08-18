@@ -2,6 +2,7 @@
 
 import datetime
 import time
+from subprocess import Popen, PIPE
 from astral import Astral
 from sh import gphoto2
 
@@ -11,9 +12,12 @@ def start(city_name="Los Angeles"):
     delay = get_timelapse_delay(dawn, dusk)
     tzinfo = dawn.tzinfo
 
+    shot = 0
     while datetime.datetime.now(tzinfo) < dusk:
         print "Taking picture at %s" % datetime.datetime.now(tzinfo)
-        take_picture()
+        filename = "timelapse_%s.jpg" % shot
+        take_picture(filename)
+        shot += 1
         time.sleep(delay)
 
 
@@ -40,7 +44,7 @@ def get_timelapse_delay(dawn, dusk, total_runtime="00:00:06", fps=24):
     """
     # The times from Astral are a day ahead, even though we explicitly set it.
     time_til_dusk = dusk - datetime.datetime.now(dusk.tzinfo)
-    time_til_dusk -= datetime.timedelta(days=1)
+    #time_til_dusk -= datetime.timedelta(days=1)
 
     hours, minutes, seconds = total_runtime.split(":")
 
@@ -51,10 +55,16 @@ def get_timelapse_delay(dawn, dusk, total_runtime="00:00:06", fps=24):
     return frame_delay
 
 
-def take_picture():
+def take_picture(filename):
     """Use gphoto2 to interact with our camera and take the picture."""
-    output = gphoto2("--capture-image-and-download")
-    print "Result: %s" % output
+    print filename
+    process = Popen([
+        "/usr/local/bin/gphoto2", "--capture-image-and-download",
+        "--filename", filename
+        ], stdout=PIPE, stderr=PIPE
+    )
+    output = process.communicate()
+    print "Result:", output
 
 
 if __name__ == "__main__":
