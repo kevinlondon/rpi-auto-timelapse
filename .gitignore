@@ -52,3 +52,8 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+
+# Cam files
+*.cr2
+*.swp*
+*.un*
