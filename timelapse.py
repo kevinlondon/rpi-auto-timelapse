@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
+import os
 import datetime
-import arrow
 import time
 from subprocess import Popen, PIPE
+
+# For easier datetimes.
+import arrow
+# For sunrise / sunset data
 from astral import Astral
-from sh import gphoto2
 
 
 def start(city_name="Los Angeles", folder="images"):
