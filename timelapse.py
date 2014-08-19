@@ -1,22 +1,29 @@
 #!/usr/bin/env python
 
 import datetime
+import arrow
 import time
 from subprocess import Popen, PIPE
 from astral import Astral
 from sh import gphoto2
 
 
-def start(city_name="Los Angeles"):
+def start(city_name="Los Angeles", folder="images"):
     dawn, dusk = get_interesting_times(city_name)
     delay = get_timelapse_delay(dawn, dusk)
     tzinfo = dawn.tzinfo
 
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
     shot = 0
-    while datetime.datetime.now(tzinfo) < dusk:
-        print "Taking picture at %s" % datetime.datetime.now(tzinfo)
-        filename = "timelapse_%s.jpg" % shot
-        take_picture(filename)
+    while arrow.now(tzinfo) < dusk:
+        raw_time = arrow.now(tzinfo)
+        formatted_time = raw_time.format("YYYY-MM-DD_HH:mm:ss")
+        print("Taking picture {0} at {1}".format(shot, formatted_time))
+        filename = "timelapse_{0}.jpg".format(formatted_time)
+        imgpath = os.path.join(folder, filename)
+        take_picture(imgpath)
         shot += 1
         time.sleep(delay)
 
