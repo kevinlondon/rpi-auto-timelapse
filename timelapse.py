@@ -51,7 +51,6 @@ def get_timelapse_delay(dawn, dusk, total_runtime="00:00:06", fps=24):
     """
     # The times from Astral are a day ahead, even though we explicitly set it.
     time_til_dusk = dusk - datetime.datetime.now(dusk.tzinfo)
-    #time_til_dusk -= datetime.timedelta(days=1)
 
     hours, minutes, seconds = total_runtime.split(":")
 
